@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://my-page-api.yvyan.workers.dev/api';
+const API_BASE_URL = process.env.API_BASE_URL;
 let token = null;
 
 // Token 管理
