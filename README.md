@@ -78,9 +78,12 @@
 4. 部署完成后，你会得到一个 `*.pages.dev` 的域名
 
 5. 配置 API 地址：
-   - 在 Pages 项目的 "Settings" > "Environment variables" 中
-   - 添加变量 `API_BASE_URL`，值为你的 Worker 地址
-   - 点击 "Save" 并重新部署
+   - 在你 fork 的仓库中找到 `static/api.js` 文件
+   - 修改第一行的 API 地址为你的 Worker 地址：
+     ```javascript
+     const API_BASE_URL = 'https://your-worker.your-subdomain.workers.dev/api';
+     ```
+   - 提交修改，Pages 会自动重新部署
 
 6. （可选）自定义域名：
    - 在 Pages 项目的 "Custom domains" 中
