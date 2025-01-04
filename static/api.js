@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.API_BASE_URL + '/api';
+// 从全局变量中获取 API 地址，并添加 /api 路径
+const API_BASE_URL = window.API_BASE_URL + '/api';
 let token = null;
 
 // Token 管理
