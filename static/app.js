@@ -976,6 +976,8 @@ async function loadIcons() {
                 const iconUrl = await getIconUrl({ url });
                 if (iconUrl) {
                     img.src = iconUrl;
+                    // 设置图片缓存策略
+                    img.crossOrigin = 'anonymous';
                     // 如果图标加载失败，使用备选图标
                     img.onerror = () => {
                         const fallbackIcon = getFallbackIcon(url);
@@ -997,6 +999,13 @@ async function loadIcons() {
 async function getIconUrl({ url }) {
     try {
         const domain = new URL(url).hostname;
+        // 先检查本地缓存
+        const cacheKey = `icon_cache_${domain}`;
+        const cachedUrl = localStorage.getItem(cacheKey);
+        if (cachedUrl) {
+            return cachedUrl;
+        }
+
         // 尝试获取源站图标
         const iconUrls = [
             `https://${domain}/favicon.ico`,
@@ -1010,10 +1019,11 @@ async function getIconUrl({ url }) {
             try {
                 // 使用 no-cors 模式避免 CORS 错误
                 const response = await fetch(iconUrl, { 
-                    mode: 'no-cors',
-                    cache: 'force-cache'  // 使用缓存减少请求
+                    mode: 'no-cors'
                 });
-                return iconUrl;  // 如果请求成功就使用这个地址
+                // 如果请求成功，缓存并返回地址
+                localStorage.setItem(cacheKey, iconUrl);
+                return iconUrl;
             } catch (error) {
                 continue;  // 如果失败就尝试下一个
             }
