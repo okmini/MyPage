@@ -972,8 +972,51 @@ async function loadIcons() {
     for (const img of icons) {
         const url = img.dataset.url;
         if (url) {
-            const iconUrl = await getIconUrl({ url });
-            img.src = iconUrl;
+            try {
+                // 尝试获取网站图标
+                const iconUrl = await getIconUrl({ url });
+                if (iconUrl) {
+                    // 测试图标是否可访问
+                    const response = await fetch(iconUrl, { mode: 'no-cors' });
+                    img.src = iconUrl;
+                } else {
+                    throw new Error('No icon found');
+                }
+            } catch (error) {
+                // 如果获取失败，使用备选图标
+                const fallbackIcon = getFallbackIcon(url);
+                img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
+            }
         }
+    }
+}
+
+// 获取网站图标
+async function getIconUrl({ url }) {
+    try {
+        const domain = new URL(url).hostname;
+        // 尝试不同的图标获取方式
+        const iconUrls = [
+            `https://icon.horse/icon/${domain}`,
+            `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+            `https://${domain}/favicon.ico`
+        ];
+
+        // 依次尝试每个图标源
+        for (const iconUrl of iconUrls) {
+            try {
+                const response = await fetch(iconUrl, { mode: 'no-cors' });
+                if (response.ok) {
+                    return iconUrl;
+                }
+            } catch (error) {
+                continue;
+            }
+        }
+
+        // 如果都失败了，返回 null
+        return null;
+    } catch (error) {
+        return null;
     }
 } 
