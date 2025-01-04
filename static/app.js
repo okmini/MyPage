@@ -33,11 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchEngine = document.getElementById('searchEngine');
     searchEngine.value = getSearchEngine();
     
+    // 检查并恢复登录状态
+    checkLoginStatus();
+    
     initializePage();
 });
 
-async function initializePage() {
-    // 检查登录状态
+// 检查登录状态
+async function checkLoginStatus() {
     const token = getToken();
     if (token) {
         try {
@@ -48,6 +51,8 @@ async function initializePage() {
             });
             if (response.ok) {
                 isAdmin = true;
+                isEditMode = false;  // 默认不进入编辑模式
+                updateAdminButton();
             } else {
                 // Token 无效，清除它
                 setToken(null);
@@ -57,9 +62,10 @@ async function initializePage() {
             setToken(null);
         }
     }
+}
 
+async function initializePage() {
     await loadNavigation();
-    updateAdminButton();
 }
 
 // 添加编辑模式状态
