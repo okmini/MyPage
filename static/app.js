@@ -1005,37 +1005,57 @@ async function loadIcons() {
 async function getIconUrl({ url }) {
     try {
         const domain = new URL(url).hostname;
-        // 先检查本地缓存
+        // 1. 先检查本地缓存
         const cacheKey = `icon_cache_${domain}`;
         const cachedUrl = localStorage.getItem(cacheKey);
         if (cachedUrl) {
             return cachedUrl;
         }
 
-        // 尝试获取源站图标
+        // 2. 尝试不同的图标服务，按可靠性排序
         const iconUrls = [
-            `https://${domain}/favicon.ico`,
-            `https://${domain}/favicon.png`,
-            `https://icon.horse/icon/${domain}`,
-            `https://api.iowen.cn/favicon/${domain}.png`
+            // Favicon Grabber (支持 CDN)
+            `https://favicongrabber.com/api/grab/${domain}`,
+            // Favicon Kit (支持 CORS)
+            `https://api.faviconkit.com/${domain}/144`,
+            // DuckDuckGo 图标服务 (可靠且支持 CORS)
+            `https://icons.duckduckgo.com/ip3/${domain}.ico`,
+            // 最后尝试网站自身图标
+            `https://${domain}/favicon.ico`
         ];
         
-        // 依次尝试每个图标源
-        for (const iconUrl of iconUrls) {
+        // 3. 先尝试 Favicon Grabber API
+        try {
+            const response = await fetch(iconUrls[0]);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.icons && data.icons.length > 0) {
+                    const iconUrl = data.icons[0].src;
+                    localStorage.setItem(cacheKey, iconUrl);
+                    return iconUrl;
+                }
+            }
+        } catch (error) {
+            console.log('Favicon Grabber failed:', error);
+        }
+
+        // 4. 依次尝试其他图标源
+        for (let i = 1; i < iconUrls.length; i++) {
             try {
-                // 使用 no-cors 模式避免 CORS 错误
-                const response = await fetch(iconUrl, { 
-                    mode: 'no-cors'
+                const response = await fetch(iconUrls[i], {
+                    method: 'HEAD'
                 });
-                // 如果请求成功，缓存并返回地址
-                localStorage.setItem(cacheKey, iconUrl);
-                return iconUrl;
-            } catch (error) {
-                continue;  // 如果失败就尝试下一个
+                if (response.ok) {
+                    localStorage.setItem(cacheKey, iconUrls[i]);
+                    return iconUrls[i];
+                }
+            }
+            catch (error) {
+                continue;
             }
         }
         
-        // 如果所有尝试都失败了，返回 null
+        // 5. 如果所有尝试都失败了，返回 null 使用备选图标
         return null;
     } catch (error) {
         return null;
