@@ -2,6 +2,10 @@
 
 一个简洁、现代的网址导航页面，基于 Cloudflare Workers 和 D1 数据库构建。支持分组管理、链接管理、搜索功能等。
 
+## 在线演示
+
+🌐 [在线预览](https://my.yvyan.top/)
+
 ## 功能特点
 
 - 🎯 简洁优雅的界面设计
@@ -59,24 +63,16 @@
 
 ### 6. 部署前端文件
 
-1. 在 GitHub 上创建一个新的仓库
-2. 将项目文件上传到仓库，保持以下结构：
-   ```
-   .
-   ├── index.html
-   ├── app.js
-   ├── api.js
-   └── styles.css
-   ```
+1. 在 GitHub 上 fork [本仓库](https://github.com/yvyan/MyPage)
 
 3. 在 Cloudflare Dashboard 中：
    - 点击左侧菜单的 "Pages"
    - 点击 "Create a project"
    - 选择 "Connect to Git"
-   - 选择你的 GitHub 仓库
+   - 选择你 fork 的仓库
    - 设置构建配置：
      - 构建命令：留空
-     - 构建输出目录：留空（默认为根目录）
+     - 构建输出目录：static
    - 点击 "Save and Deploy"
 
 4. 部署完成后，你会得到一个 `*.pages.dev` 的域名
