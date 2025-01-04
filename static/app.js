@@ -973,14 +973,17 @@ async function loadIcons() {
         const url = img.dataset.url;
         if (url) {
             try {
-                // 尝试获取网站图标
                 const iconUrl = await getIconUrl({ url });
-                img.src = iconUrl;
-                // 如果图标加载失败，使用备选图标
-                img.onerror = () => {
-                    const fallbackIcon = getFallbackIcon(url);
-                    img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
-                };
+                if (iconUrl) {
+                    img.src = iconUrl;
+                    // 如果图标加载失败，使用备选图标
+                    img.onerror = () => {
+                        const fallbackIcon = getFallbackIcon(url);
+                        img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
+                    };
+                } else {
+                    throw new Error('No icon found');
+                }
             } catch (error) {
                 // 如果获取失败，使用备选图标
                 const fallbackIcon = getFallbackIcon(url);
@@ -994,8 +997,30 @@ async function loadIcons() {
 async function getIconUrl({ url }) {
     try {
         const domain = new URL(url).hostname;
-        // 使用 Google 的 favicon 服务
-        return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        // 尝试获取源站图标
+        const iconUrls = [
+            `https://${domain}/favicon.ico`,
+            `https://${domain}/favicon.png`,
+            `https://icon.horse/icon/${domain}`,
+            `https://api.iowen.cn/favicon/${domain}.png`
+        ];
+        
+        // 依次尝试每个图标源
+        for (const iconUrl of iconUrls) {
+            try {
+                // 使用 no-cors 模式避免 CORS 错误
+                const response = await fetch(iconUrl, { 
+                    mode: 'no-cors',
+                    cache: 'force-cache'  // 使用缓存减少请求
+                });
+                return iconUrl;  // 如果请求成功就使用这个地址
+            } catch (error) {
+                continue;  // 如果失败就尝试下一个
+            }
+        }
+        
+        // 如果所有尝试都失败了，返回 null
+        return null;
     } catch (error) {
         return null;
     }
