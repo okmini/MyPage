@@ -882,7 +882,7 @@ function getLinkCard(link) {
     const iconSrc = link.logo || '#';
 
     return `
-        <div class="link-card">
+        <a href="${link.url}" target="_blank" class="link-card">
             <div class="link-info">
                 <div class="link-icon">
                     <img src="${iconSrc}" 
@@ -892,14 +892,14 @@ function getLinkCard(link) {
                         onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${getFallbackIcon(link.url)}.svg';">
                 </div>
                 <div class="link-text">
-                    <a href="${link.url}" target="_blank" class="link-title">
+                    <span class="link-title">
                         ${link.name}
-                    </a>
+                    </span>
                     <div class="link-description">${link.description || ''}</div>
                 </div>
             </div>
             ${isEditMode ? `
-                <div class="link-actions">
+                <div class="link-actions" onclick="event.preventDefault();">
                     <div class="order-actions">
                         <button onclick="moveLinkUp(${link.id}, ${link.group_id})" title="上移">
                             <i class="fas fa-arrow-up"></i>
@@ -916,7 +916,7 @@ function getLinkCard(link) {
                     </button>
                 </div>
             ` : ''}
-        </div>
+        </a>
     `;
 }
 
