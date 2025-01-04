@@ -234,10 +234,18 @@ async function handleLinkSubmit(event) {
             orderNum = parseInt(event.target.dataset.orderNum) || 0;
         }
     } else {
-        // 新建链接
-        const links = (await fetchLinks()).filter(l => l.group_id === groupId);
-        links.sort((a, b) => a.order_num - b.order_num);
-        orderNum = links.length + 1;
+        // 添加新链接
+        try {
+            const links = await fetchLinks();
+            const groupLinks = links.filter(l => l.group_id === groupId);
+            // 找到当前分组中最大的序号
+            const maxOrderNum = groupLinks.reduce((max, link) => 
+                Math.max(max, link.order_num || 0), 0);
+            orderNum = maxOrderNum + 1;
+        } catch (error) {
+            console.error('获取链接序号失败:', error);
+            orderNum = 1; // 如果出错，默认使用1
+        }
     }
     
     const formData = {
@@ -251,12 +259,13 @@ async function handleLinkSubmit(event) {
     
     try {
         if (linkId) {
-            await updateLink(linkId, formData);
+            await updateLink(parseInt(linkId), formData);
         } else {
             await createLink(formData);
         }
+        
         closeLinkModal();
-        showToast('链接保存成功');
+        showToast('保存成功');
         await loadNavigation();
     } catch (error) {
         showToast('保存失败: ' + error.message, 'error');
