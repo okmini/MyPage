@@ -6,6 +6,10 @@
 
 🌐 [在线预览](https://my.yvyan.top/)
 
+## 界面预览
+
+![界面预览](https://raw.githubusercontent.com/yvyan/MyPage/main/image.png)
+
 ## 功能特点
 
 - 🎯 简洁优雅的界面设计
