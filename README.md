@@ -145,8 +145,14 @@
 
 MIT License
 
+## 作者
+
+[Yvyan](https://github.com/yvyan)
+
 ## 鸣谢
 
 - [Cloudflare Workers](https://workers.cloudflare.com/)
 - [Font Awesome](https://fontawesome.com/)
 - [DuckDuckGo](https://duckduckgo.com/) (图标 API) 
+- 代码由Cursor编写，仍存在少量bug未解决，欢迎大家提出问题和建议
+- 所有贡献者和使用者
