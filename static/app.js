@@ -878,16 +878,18 @@ function getGroupTitle(group) {
 
 // 生成链接卡片
 function getLinkCard(link) {
-    const fallbackIcon = getFallbackIcon(link.url);
+    // 如果链接有自定义logo，直接使用
+    const iconSrc = link.logo || '#';
 
     return `
         <div class="link-card">
             <div class="link-info">
                 <div class="link-icon">
-                    <img src="#" 
-                         data-url="${link.url}"
-                         alt="${link.name}" 
-                         onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg';">
+                    <img src="${iconSrc}" 
+                        data-url="${link.url}"
+                        alt="${link.name}" 
+                        ${!link.logo ? 'data-auto-icon="true"' : ''}
+                        onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${getFallbackIcon(link.url)}.svg';">
                 </div>
                 <div class="link-text">
                     <a href="${link.url}" target="_blank" class="link-title">
@@ -976,26 +978,23 @@ function getFallbackIcon(url) {
 async function loadIcons() {
     const icons = document.querySelectorAll('.link-icon img');
     for (const img of icons) {
-        const url = img.dataset.url;
-        if (url) {
-            try {
-                const iconUrl = await getIconUrl({ url });
-                if (iconUrl) {
-                    img.src = iconUrl;
-                    // 设置图片缓存策略
-                    img.crossOrigin = 'anonymous';
-                    // 如果图标加载失败，使用备选图标
-                    img.onerror = () => {
-                        const fallbackIcon = getFallbackIcon(url);
-                        img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
-                    };
-                } else {
-                    throw new Error('No icon found');
+        // 只处理没有自定义logo且需要自动获取图标的图片
+        if (img.dataset.autoIcon === 'true') {
+            const url = img.dataset.url;
+            if (url) {
+                try {
+                    const iconUrl = await getIconUrl({ url });
+                    if (iconUrl) {
+                        img.src = iconUrl;
+                        img.crossOrigin = 'anonymous';
+                    } else {
+                        throw new Error('No icon found');
+                    }
+                } catch (error) {
+                    // 如果获取失败，使用备选图标
+                    const fallbackIcon = getFallbackIcon(url);
+                    img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
                 }
-            } catch (error) {
-                // 如果获取失败，使用备选图标
-                const fallbackIcon = getFallbackIcon(url);
-                img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
             }
         }
     }
