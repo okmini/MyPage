@@ -1,19 +1,13 @@
 // 搜索引擎配置
 const SEARCH_ENGINES = {
     baidu: {
-        url: 'https://www.baidu.com/s?wd=',
-        icon: 'fa-baidu',
-        name: '百度'
+        url: 'https://www.baidu.com/s?wd='
     },
     google: {
-        url: 'https://www.google.com/search?q=',
-        icon: 'fa-google',
-        name: 'Google'
+        url: 'https://www.google.com/search?q='
     },
     bing: {
-        url: 'https://www.bing.com/search?q=',
-        icon: 'fa-microsoft',
-        name: 'Bing'
+        url: 'https://www.bing.com/search?q='
     }
 };
 
@@ -1004,26 +998,22 @@ async function loadIcons() {
 async function getIconUrl({ url }) {
     try {
         const domain = new URL(url).hostname;
-        // 1. 先检查本地缓存
+        // 先检查本地缓存
         const cacheKey = `icon_cache_${domain}`;
         const cachedUrl = localStorage.getItem(cacheKey);
         if (cachedUrl) {
             return cachedUrl;
         }
 
-        // 2. 尝试不同的图标服务，按可靠性排序
+        // 尝试不同的图标服务，按可靠性排序
         const iconUrls = [
-            // Favicon Grabber (支持 CDN)
             `https://favicongrabber.com/api/grab/${domain}`,
-            // Favicon Kit (支持 CORS)
             `https://api.faviconkit.com/${domain}/144`,
-            // DuckDuckGo 图标服务 (可靠且支持 CORS)
             `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-            // 最后尝试网站自身图标
             `https://${domain}/favicon.ico`
         ];
         
-        // 3. 先尝试 Favicon Grabber API
+        // 先尝试 Favicon Grabber API
         try {
             const response = await fetch(iconUrls[0]);
             if (response.ok) {
@@ -1035,10 +1025,10 @@ async function getIconUrl({ url }) {
                 }
             }
         } catch (error) {
-            console.log('Favicon Grabber failed:', error);
+            // 移除不必要的日志
         }
-
-        // 4. 依次尝试其他图标源
+        
+        // 依次尝试其他图标源
         for (let i = 1; i < iconUrls.length; i++) {
             try {
                 const response = await fetch(iconUrls[i], {
@@ -1054,7 +1044,7 @@ async function getIconUrl({ url }) {
             }
         }
         
-        // 5. 如果所有尝试都失败了，返回 null 使用备选图标
+        // 如果所有尝试都失败了，返回 null 使用备选图标
         return null;
     } catch (error) {
         return null;

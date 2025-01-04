@@ -174,109 +174,12 @@ body {
 
 .group {
     animation: fadeIn 0.5s ease;
-}
-
-.link-card {
-    animation: slideIn 0.3s ease;
-}
-
-/* 添加按钮动画 */
-.admin-controls button {
-    position: relative;
-    overflow: hidden;
-}
-
-.admin-controls button::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0;
-    border-radius: 100%;
-    transform: scale(1, 1) translate(-50%);
-    transform-origin: 50% 50%;
-}
-
-.admin-controls button:focus:not(:active)::after {
-    animation: ripple 1s ease-out;
-}
-
-@keyframes ripple {
-    0% { transform: scale(0, 0); opacity: 0.5; }
-    20% { transform: scale(25, 25); opacity: 0.5; }
-    100% { opacity: 0; transform: scale(40, 40); }
-}
-
-/* 管理员按钮 */
-#adminButton {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.admin-button {
-    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-    border-radius: 6px;
-    padding: 8px 16px;
-    color: white;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* 不同按钮的颜色 */
-.admin-button[onclick*="handleLogout"] {
-    background-color: #e53e3e;
-}
-
-.admin-button[onclick*="handleLogout"]:hover {
-    background-color: #c53030;
-}
-
-.admin-button[onclick*="exitEditMode"] {
-    background-color: #718096;
-}
-
-.admin-button[onclick*="exitEditMode"]:hover {
-    background-color: #4a5568;
-}
-
-.admin-button[onclick*="enterEditMode"],
-.admin-button[onclick*="openAdminModal"] {
-    background-color: #4299e1;
-}
-
-.admin-button[onclick*="enterEditMode"]:hover,
-.admin-button[onclick*="openAdminModal"]:hover {
-    background-color: #3182ce;
-}
-
-.admin-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px -1px rgba(66, 153, 225, 0.3);
-}
-
-/* 导航内容样式 */
-.navigation {
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-}
-
-.group {
     margin-bottom: 15px;
     background: white;
     padding: 20px;
+    position: relative;
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    scroll-margin-top: 20px;
 }
 
 .group-title {
@@ -839,10 +742,10 @@ body {
 .group::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
     background: linear-gradient(135deg, rgba(66, 153, 225, 0.1) 0%, rgba(99, 179, 237, 0.05) 100%);
     border-radius: 12px;
     opacity: 0;
@@ -1096,10 +999,10 @@ body {
 .group::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
     background: linear-gradient(135deg, rgba(66, 153, 225, 0.1) 0%, rgba(99, 179, 237, 0.05) 100%);
     border-radius: 12px;
     opacity: 0;
@@ -1320,4 +1223,61 @@ body {
 
 .link-actions button:hover {
     z-index: 3;
+} 
+
+/* 管理员按钮 */
+#adminButton {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.admin-button {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    border-radius: 6px;
+    padding: 8px 16px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 不同按钮的颜色 */
+.admin-button[onclick*="handleLogout"] {
+    background: #e53e3e;
+}
+
+.admin-button[onclick*="handleLogout"]:hover {
+    background: #c53030;
+}
+
+.admin-button[onclick*="exitEditMode"] {
+    background: #718096;
+}
+
+.admin-button[onclick*="exitEditMode"]:hover {
+    background: #4a5568;
+}
+
+.admin-button[onclick*="enterEditMode"],
+.admin-button[onclick*="openAdminModal"] {
+    background: #4299e1;
+}
+
+.admin-button[onclick*="enterEditMode"]:hover,
+.admin-button[onclick*="openAdminModal"]:hover {
+    background: #3182ce;
+}
+
+.admin-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(66, 153, 225, 0.3);
+}
+
+.admin-button i {
+    font-size: 14px;
 } 

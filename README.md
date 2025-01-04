@@ -119,14 +119,14 @@
 
 ```
 .
+├── schema.sql        # 数据库结构
 ├── src/
 │   └── index.js      # Worker 后端代码
-├── static/
-│   ├── index.html    # 前端页面
-│   ├── app.js        # 前端逻辑
-│   ├── api.js        # API 调用封装
-│   └── styles.css    # 样式文件
-└── schema.sql        # 数据库结构
+└── static/           # 前端文件目录
+     ├── index.html    # 前端页面
+     ├── app.js        # 前端逻辑
+     ├── api.js        # API 调用封装
+     └── styles.css    # 样式文件
 ```
 
 ## 技术栈
