@@ -890,8 +890,13 @@ function getGroupTitle(group) {
 
 // 生成链接卡片
 function getLinkCard(link) {
-    // 如果链接有自定义logo，直接使用
     const iconSrc = link.logo || '#';
+    const defaultIcon = encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <rect width="24" height="24" rx="12" fill="#4299e1" opacity="0.1"/>
+            <path fill="#4299e1" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+        </svg>
+    `.trim());
 
     return `
         <a href="${link.url}" target="_blank" class="link-card">
@@ -901,7 +906,7 @@ function getLinkCard(link) {
                         data-url="${link.url}"
                         alt="${link.name}" 
                         ${!link.logo ? 'data-auto-icon="true"' : ''}
-                        onerror="this.onerror=null; this.src='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/svgs/solid/${getFallbackIcon(link.url)}.svg';">
+                        onerror="this.onerror=null; this.src='data:image/svg+xml,${defaultIcon}';">
                 </div>
                 <div class="link-text">
                     <span class="link-title">
@@ -1002,8 +1007,7 @@ async function loadIcons() {
                         throw new Error('No icon found');
                     }
                 } catch (error) {
-                    const fallbackIcon = getFallbackIcon(url);
-                    img.src = `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/svgs/solid/${fallbackIcon}.svg`;
+                    img.src = defaultIcon;
                 }
             }
         }
