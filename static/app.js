@@ -901,7 +901,7 @@ function getLinkCard(link) {
                         data-url="${link.url}"
                         alt="${link.name}" 
                         ${!link.logo ? 'data-auto-icon="true"' : ''}
-                        onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.4.2/svgs/solid/${getFallbackIcon(link.url)}.svg';">
+                        onerror="this.onerror=null; this.src='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/svgs/solid/${getFallbackIcon(link.url)}.svg';">
                 </div>
                 <div class="link-text">
                     <span class="link-title">
@@ -1003,7 +1003,7 @@ async function loadIcons() {
                     }
                 } catch (error) {
                     const fallbackIcon = getFallbackIcon(url);
-                    img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.4.2/svgs/solid/${fallbackIcon}.svg`;
+                    img.src = `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/svgs/solid/${fallbackIcon}.svg`;
                 }
             }
         }
