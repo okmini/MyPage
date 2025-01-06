@@ -327,33 +327,51 @@ async function handleGroupSubmit(event) {
 const iconCache = new Map();
 
 // 获取图标URL并缓存
-async function getIconUrl(link) {
-    const domain = new URL(link.url).hostname;
-    
-    // 如果有用户设置的logo，直接使用
-    if (link.logo) return link.logo;
-    
-    // 检查缓存
-    if (iconCache.has(domain)) {
-        return iconCache.get(domain);
-    }
-    
-    // 尝试获取网站根目录的favicon
-    const rootFaviconUrl = `https://${domain}/favicon.ico`;
+async function getIconUrl({ url }) {
     try {
-        const response = await fetch(rootFaviconUrl, { method: 'HEAD' });
-        if (response.ok) {
-            iconCache.set(domain, rootFaviconUrl);
-            return rootFaviconUrl;
+        const domain = new URL(url).hostname;
+        // 先检查本地缓存
+        const cacheKey = `icon_cache_${domain}`;
+        const cachedUrl = localStorage.getItem(cacheKey);
+        if (cachedUrl) {
+            return cachedUrl;
         }
+        
+        // 尝试不同的图标服务，按可靠性排序
+        const iconUrls = [
+            // 使用 Icon Horse 服务（支持 CORS）
+            `https://icon.horse/icon/${domain}`,
+            // 使用 Favicon Kit（支持 CORS）
+            `https://api.faviconkit.com/${domain}/144`,
+            // 最后尝试网站自身的图标
+            `https://${domain}/favicon.ico`
+        ];
+        
+        // 依次尝试每个图标源
+        for (const iconUrl of iconUrls) {
+            try {
+                // 直接使用 img 标签测试图标是否可用
+                const img = new Image();
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = iconUrl;
+                });
+                
+                // 如果图片加载成功，缓存并返回URL
+                localStorage.setItem(cacheKey, iconUrl);
+                return iconUrl;
+            }
+            catch (error) {
+                continue;
+            }
+        }
+        
+        // 如果所有尝试都失败了，返回 null 使用备选图标
+        return null;
     } catch (error) {
-        console.log('Favicon not found at root');
+        return null;
     }
-    
-    // 使用DuckDuckGo的图标服务
-    const duckduckgoIconUrl = `https://icons.duckduckgo.com/ip3/${domain}.ico`;
-    iconCache.set(domain, duckduckgoIconUrl);
-    return duckduckgoIconUrl;
 }
 
 // 导航内容加载
@@ -883,7 +901,7 @@ function getLinkCard(link) {
                         data-url="${link.url}"
                         alt="${link.name}" 
                         ${!link.logo ? 'data-auto-icon="true"' : ''}
-                        onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${getFallbackIcon(link.url)}.svg';">
+                        onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.4.2/svgs/solid/${getFallbackIcon(link.url)}.svg';">
                 </div>
                 <div class="link-text">
                     <span class="link-title">
@@ -972,7 +990,6 @@ function getFallbackIcon(url) {
 async function loadIcons() {
     const icons = document.querySelectorAll('.link-icon img');
     for (const img of icons) {
-        // 只处理没有自定义logo且需要自动获取图标的图片
         if (img.dataset.autoIcon === 'true') {
             const url = img.dataset.url;
             if (url) {
@@ -985,68 +1002,10 @@ async function loadIcons() {
                         throw new Error('No icon found');
                     }
                 } catch (error) {
-                    // 如果获取失败，使用备选图标
                     const fallbackIcon = getFallbackIcon(url);
-                    img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome/svgs/solid/${fallbackIcon}.svg`;
+                    img.src = `https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@6.4.2/svgs/solid/${fallbackIcon}.svg`;
                 }
             }
         }
     }
 }
-
-// 获取网站图标
-async function getIconUrl({ url }) {
-    try {
-        const domain = new URL(url).hostname;
-        // 先检查本地缓存
-        const cacheKey = `icon_cache_${domain}`;
-        const cachedUrl = localStorage.getItem(cacheKey);
-        if (cachedUrl) {
-            return cachedUrl;
-        }
-
-        // 尝试不同的图标服务，按可靠性排序
-        const iconUrls = [
-            `https://favicongrabber.com/api/grab/${domain}`,
-            `https://api.faviconkit.com/${domain}/144`,
-            `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-            `https://${domain}/favicon.ico`
-        ];
-        
-        // 先尝试 Favicon Grabber API
-        try {
-            const response = await fetch(iconUrls[0]);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.icons && data.icons.length > 0) {
-                    const iconUrl = data.icons[0].src;
-                    localStorage.setItem(cacheKey, iconUrl);
-                    return iconUrl;
-                }
-            }
-        } catch (error) {
-            // 移除不必要的日志
-        }
-        
-        // 依次尝试其他图标源
-        for (let i = 1; i < iconUrls.length; i++) {
-            try {
-                const response = await fetch(iconUrls[i], {
-                    method: 'HEAD'
-                });
-                if (response.ok) {
-                    localStorage.setItem(cacheKey, iconUrls[i]);
-                    return iconUrls[i];
-                }
-            }
-            catch (error) {
-                continue;
-            }
-        }
-        
-        // 如果所有尝试都失败了，返回 null 使用备选图标
-        return null;
-    } catch (error) {
-        return null;
-    }
-} 
